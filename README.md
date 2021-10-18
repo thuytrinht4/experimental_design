@@ -1,7 +1,7 @@
 # Experimental Design
 Within the experimental design layout in this project, there are three lessons:
 
-[I. Concepts of Experiment Design](#I.-Concepts-of-Experiment-Design) <br>
+[I. Concepts of Experiment Design](#I-.-Concepts-of-Experiment-Design) <br>
   + [Type of study](#Types-of-Study)
     + What is an Experiment, Observational Study and Quasi-Experiment?
     + What it means to run an experiment?
@@ -20,7 +20,7 @@ Within the experimental design layout in this project, there are three lessons:
   + [Ethics in Experimental](#-Ethics-in-Experimentation)
   + [SMART Mnemomic for Experimental Design](#SMART-Mnemomic-for-Experimental-Design)
   
-[II. Statistical Considerations in Testing](#II.-Statistical-Considerations-in-Testing) <br>
+[II. Statistical Considerations in Testing](#II-.-Statistical-Considerations-in-Testing) <br>
   + Basic of statistical techniques
   + Statistical techniques and considerations used when evaluating the data collected during an experiment
 
@@ -32,8 +32,8 @@ Within the experimental design layout in this project, there are three lessons:
   experimental design and statistical metrics.
 
 
-## I. Concepts of Experiment Design
-### Types of Study
+# I. Concepts of Experiment Design
+## Types of Study
 There are many ways in which data can be collected in order to test or understand the relationship between two variables 
 of interest. These methods can be put into three main bins, based on the amount of control that you hold over the 
 variables in play:
@@ -45,7 +45,7 @@ variables in play:
 While the experiment is the main focus of this project, it's also useful to know about the other types of study so that 
 you can use them in effective ways, especially if an experiment cannot be run.
 
-#### Experiments
+### Experiments
 In the social and medical sciences, an experiment is defined by comparing outcomes between two or more groups, and 
 ensuring equivalence between the compared groups ***except*** for the manipulation that we want to test. Our interest in an 
 experiment is to see if a change in one feature has an effect in the value of a second feature, like seeing if changing 
@@ -60,7 +60,7 @@ each group, then on the whole, we should expect the feature distributions betwee
 This theoretically isolates the changes in the outcome to the changes in our manipulated feature. Of course, we can 
 always dig deeper afterwards to see if certain other features worked in tandem with, or against, our manipulation.
 
-#### Observational Studies
+### Observational Studies
 In an experiment, we exert a lot of control on a system in order to narrow down the changes in our system from one 
 source to one output. Observational studies, on the other hand, are defined by a lack of control. Observational studies 
 are also known as naturalistic or correlational studies. In an observational study, no control is exerted on the 
@@ -76,7 +76,7 @@ causation does not mean that it is not useful. An interesting relationship might
 additional studies or to collect more data. These studies can help strengthen the understanding of the relationship 
 we're interested in by ruling out more and more alternative hypotheses.
 
-#### Quasi-Experiments
+### Quasi-Experiments
 In between the observational study and the experiment is the quasi-experiment. This is where some, but not all, of the 
 control requirements of a true experiment are met. For example, rolling out a new website interface to all users to see 
 how much time they spend on it might be considered a quasi-experiment. While the manipulation is controlled by the 
@@ -98,7 +98,7 @@ still provide a strong amount of evidence for the relationship being investigate
 of matching is performed to identify similar units or groups. Another benefit of quasi-experimental designs is that the 
 relaxation of requirements makes the quasi-experiment more flexible and easier to set up.
 
-#### Examples
+### Examples
 | STUDY DESCRIPTION   |      TYPE OF STUDY |
 |----------|:-------------:|
 | A blogger tries out a celebrity diet and exercise regimen, and documents their changes in weight and energy. |  Quasi-Experiment |
@@ -107,7 +107,7 @@ relaxation of requirements makes the quasi-experiment more flexible and easier t
 | A regional store chain tests out a promotional discount at some of their stores to see if it increases sales. |    Quasi-Experiment   |
 | Researchers compare the race times for runners based on the type of shoe that they wear. |    Observational Study   |
 
-### Type of Experiments
+## Type of Experiments
 There are two main types of experiments:
   + **Between-subjects design**: one condition per participant  e.g: A/B test
   + **Within-subjects design**: many conditions per participants
@@ -141,7 +141,7 @@ visits a website and completes their session, we usually can't guarantee when th
 following visit also might not be comparable to their first. It can take a lot more effort in control in order to set 
 up an effective within-subjects design.
 
-#### Factorial Designs
+### Factorial Designs
 Factorial designs manipulate the value of multiple features of interest. For example, with two independent manipulations 
 "X" and "Y", we have four conditions: "control", "X only", "Y only", "X and Y". Experimental designs where multiple 
 features are manipulated simultaneously are more frequently seen in engineering and physical sciences domains, where the 
@@ -237,8 +237,8 @@ In general company operations, you might encounter the terms "key results" (KRs)
 a similar purpose as study goals and evaluation metrics, and might even be driving factors in the creation of an 
 experiment.
 
-### Creating Metrics
-#### Funnels
+## Creating Metrics
+### Funnels
 There are additional concepts and terms that are commonly used for designing experiments, especially for web-based 
 studies. In a web experiment, you'll often think of the user **funnel**. A funnel is the flow of steps you expect a user 
 of your product to take. Typically, the funnel ends at the place where your main evaluation metric is recorded, and 
@@ -260,7 +260,7 @@ xample, users might perform multiple searches in a single session, or want to pu
 access the site through a specific link, subverting the top part of the funnel. Refining the funnel and being specific 
 about the kinds of events that are expected can help you create a consistent, reliable design and analysis.
 
-#### Unit of Diversion
+### Unit of Diversion
 Once you have a funnel, think about how you can implement your experimental manipulation in the funnel. If the goal 
 of the above experiment was to change the way the site looks after a user clicks on a product image, we need to 
 figure out a way to assign users to either a control group or experimental group. The place in which you make this 
@@ -282,7 +282,7 @@ cookie-based diversion. If the differences in interface between control and expe
 probably okay with cookie-based diversion. But if we think that users will notice the change and we believe that it 
 will have a major effect on experience, then we might be inclined to choose an account-based diversion.
 
-#### Invariant and Evaluation Metrics
+### Invariant and Evaluation Metrics
 A funnel will also be of benefit when it comes to deciding on metrics to track and analyze as part of the experiment. 
 The immediate features that come out of a funnel come in the form of counts and ratios. For example, we could count the 
 number of times a search results in a product being selected (a count), or the ratio of selections to searches as 
@@ -303,7 +303,7 @@ manipulation's effects. Don't think that you need to track every possible metric
 few key metrics, ignoring features that might be less reliable or highly correlated to other, more informative features. 
 We'll discuss statistical considerations surrounding metrics in the next lesson.
 
-### Controlling Variables
+## Controlling Variables
 If we want to determine causality between two features, there are two main things to control. First of all, we need to 
 enact the manipulation on one of the features of interest, so that we know that it is causing the change in the other 
 feature. In order to know that it was our manipulated variable and not any other, the second major control point is 
@@ -323,37 +323,37 @@ direction of effect. A relationship between variables "A" and "B" might be due t
 the reverse, "B" having an effect on "A". It might even be the case that "A" and "B" are related through some other 
 function like a third variable.
 
-### Checking Validity
+## Checking Validity
 When designing an experiment, it's important to keep in mind validity, which concerns how well conclusions can be 
 supported. There are three major conceptual dimensions upon which validity can be assessed:
 + Construct Validity
 + Internal Validity
 + External Validity
 
-#### Construct Validity
+### Construct Validity
 Construct validity is tied to the earlier discussion of how well one's goals are aligned to the evaluation metrics 
 used to evaluate it. Poor construct validity can come about when an evaluation metric does not actually measure 
 something related to the desired outcome concept. Alternatively, it might be that a metric is ill-constructed, 
 such that it does not make clear distinctions on the outcome concept.
 
-#### Internal Validity
+### Internal Validity
 Internal validity refers to the degree to which a causal relationship can be derived from an experiment's results. 
 Controlling for and accounting for other variables is key to maintaining good internal validity. The previous page on 
 controlling variables shows ways in which internal validity might not be met.
 
-#### External Validity
+### External Validity
 External validity is concerned with the ability of an experimental outcome to be generalized to a broader population. 
 This is most relevant with experiments that involve sampling: how representative is the sample to the whole? 
 For studies at academic institutions, a frequent question is if data collected using only college students can be 
 generalized to other age or socioeconomic groups.
 
 
-### Checking Bias
+## Checking Bias
 Biases in experiments are systematic effects that interfere with the interpretation of experimental results, 
 mostly in terms of internal validity. Just as humans can have a lot of different [biases](https://en.wikipedia.org/wiki/List_of_cognitive_biases), 
 there are numerous ways in which an experiment can become unbalanced.
 
-#### Sampling Bias
+### Sampling Bias
 Many experimental biases fall under the sampling bias umbrella. Sampling biases are those that cause our observations 
 to not be representative of the population. For example, if assignment to experimental groups is done in an arbitrary 
 fashion (as opposed to random assignment or matched groups), we risk our outcomes being based less on the experimental 
@@ -371,7 +371,7 @@ than add armor to the spots where returning planes had bullet holes, armor was a
 didn't have bullet holes. That's because the planes that took shots to those places probably crashed, due to those 
 locations being more vital for maintaining flight, so they didn't "survive" and weren't available for observation.
 
-#### Novelty Bias
+### Novelty Bias
 A novelty effect is one that causes observers to change their behavior simply because they're seeing something new. 
 We might not be able to gauge the true effect of a manipulation until after the novelty wears off and population 
 metrics return to a level that actually reflects the changes made. This will be important for cases where we want to 
@@ -379,7 +379,7 @@ track changes over time, such as trying to get users to re-visit a webpage or us
 probably not a concern (or perhaps what we hope for) when it comes to manipulations that are expected to only have a 
 one-shot effect.
 
-#### Order Biases
+### Order Biases
 There are a couple of biases to be aware of when running a within-subjects experiment. Recall that in a within-subjects 
 design, each participant performs a task or makes a rating in multiple experimental conditions, rather than just one. 
 The order in which conditions are completed could have an effect on participant responses. 
@@ -395,7 +395,7 @@ affects early conditions, perhaps biasing them to be recalled better or to serve
 A recency effect is one that affects later conditions, perhaps causing bias due to being fresher in memory or task 
 fatigue.
 
-#### Experimenter Bias
+### Experimenter Bias
 One bias to watch out for, especially in face-to-face experiments, is the experimenter bias. This is where the presence 
 or knowledge of the experimenter can affect participants' behaviors or performance. If an experimenter knows what 
 condition a participant is in, they might subtly nudge the participant towards their expected result with their 
@@ -493,6 +493,25 @@ the message is pretty much the same, with the dimensions switched around a bit. 
 doesn't cover certain considerations important to experiment design. Considerations of ethical issues or bias will 
 need to be considered separately, so don't just take the mnemonic as the final judge of whether your experiment is 
 ready to proceed!
+
+
+# II. Statistical Considerations in Testing
+There are more important to statistical consideration in the experimental design, rather than just coming in at the end 
+of the study. For example, for setting up the experiment, the point about collecting some data seems a bit vague. 
+Specifically, there are some question raisin, like:
+
+How much data will we need before we can judge our experiment's success on solid grounds? Do I need a thousand data
+  points, 10,000, or 100,000?
+
+Factors like the size of the effect that we want to see can can have a major effect on how much data we need to collect,
+and how long it will take before we get our results. 
+
+This is where we need to have some statistical considerations.
+Below are the main points to cover: 
++ How can statistics be used to setup an experiment?
++ What pitfalls are there in analysing an experiment?
+
+
 
 
 
