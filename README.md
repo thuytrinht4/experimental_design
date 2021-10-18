@@ -22,7 +22,17 @@ Within the experimental design layout in this project, there are three lessons:
   
 [II. Statistical Considerations in Testing](#II-.-Statistical-Considerations-in-Testing) <br>
   + Basic of statistical techniques
+    + [Practical Significance](#Practical-Significance)
+    + [Experiment Size](#Experiment-Size)
   + Statistical techniques and considerations used when evaluating the data collected during an experiment
+    + [Using Dummy Tests](#Using-Dummy-Tests)
+    + [Non-Parametric Tests](#Non-Parametric-Tests)
+      + [Bootstrapping](#Bootstrapping)
+      + [Permutation Tests](#Permutation-Tests)
+      + [Rank-Sum Test (Mann-Whitney)](#Rank-Sum-Test)
+      + [Sign Test](#Sign-Test)
+      
+    
 
 [III. A/B Testing Case Study](#III.-A/B-Testing-Case-Study)
   + analyze data related to a change on a web page designed to increase purchasers of software
@@ -592,6 +602,90 @@ trouble. An alternative approach is to perform a hybrid test. In the A/B testing
 A/A/B test. That is, we split the data into three groups: two control and one experimental. A comparison between 
 control groups can be used to learn about null-environment properties before making inferences on the effect of 
 the experimental manipulation.
+
+## Non-Parametric Tests
+Up until now, you've been using standard hypothesis tests on means of normal distributions to design and analyze 
+experiments. However, it's possible that you will encounter scenarios where you can't rely on only standard tests. 
+This might be due to uncertainty about the true variability of a metric's distribution, a lack of data to assume 
+normality, or wanting to do inference on a statistic that lacks a standard test. It's useful to know about some 
+non-parametric tests, not just as a workaround for cases like this, but also as a second check on your experimental 
+results. The main benefit of non-parametric tests is that they don't rely on many assumptions of the underlying 
+population, and so can be used in a wider range of circumstances compared to standard tests.
+
+### Bootstrapping
+Bootstrapping is used to estimate sampling distributions by using the actually collected data to generate new samples 
+that could have been hypothetically collected. In a standard bootstrap, a bootstrapped sample means drawing points 
+from the original data with replacement until we get as many points as there were in the original data. 
+Essentially, we're treating the original data as the population: without making assumptions about the original 
+population distribution, using the original data as a model of the population is the best that we can do.
+
+Taking a lot of bootstrapped samples allows us to estimate the sampling distribution for various statistics on our 
+original data. For example, let's say that we wanted to create a 95% confidence interval for the 90th percentile from 
+a dataset of 5000 data points. (Perhaps we're looking at website load times and want to reduce the worst cases.) 
+Bootstrapping makes this easy to estimate. First of all, we take a bootstrap sample (i.e., draw 5000 points with 
+replacement from the original data), record the 90th percentile, and then repeat this a large number of times, 
+let's say 100 000. From this bunch of bootstrapped 90th percentile estimates, we form our confidence interval by 
+finding the values that capture the central 95% of the estimates (cutting off 2.5% on each tail). Implement this 
+operation in the cells below, using the following steps:
++ Initialize some useful variables by storing the number of data points in n_points and setting up an empty list for the bootstrapped quantile values in sample_qs.
++ Create a loop for each trial:
+   + First generate a bootstrap sample by sampling from our data with replacement. (random.choice will be useful here.)
+   + Then, compute the qth quantile of the sample and add it to the sample_qs list. If you're using NumPy v0.15 or later, you can use the quantile function to get the quantile directly with q; on v0.14 or earlier, you'll need to put q in terms of a percentile and use percentile instead.
++ After gathering the bootstrapped quantiles, find the limits that capture the central c proportion of quantiles to form the estimated confidence interval.
+
+#### Bootstrapping notes
+Confidence intervals coming from the bootstrap procedure will be optimistic compared to the true state of the world. This is because there will be things that we don't know about the real world that we can't account for, due to not having a parametric model of the world's state. Consider the extreme case of trying to understand the distribution of the maximum value: our confidence interval would never be able to include any value greater than the largest observed value and it makes no sense to have any lower bound below the maximum observation. Intuitively, however, there's a pretty clear possibility for there to be unobserved values that are larger than the one we've observed, especially for skewed data like shown in the example.
+
+This doesn't override the bootstrap method's advantages, however. The bootstrap procedure is fairly simple and straightforward. Since you don't make assumptions about the distribution of data, it can be applicable for any case you encounter. The results should also be fairly comparable to standard tests. But it does take computational effort, and its output does depend on the data put in. For reference, for the 95% CI on the 90th percentile example explored above, the inferred interval would only capture about 83% of 90th percentiles from the original generating distribution. But a more intricate procedure using a binomial assumption to index on the observed data only does about one percentage point better (84%). And both of these depend on the specific data generated: a different set of 5000 points will produce different intervals, with different accuracies.
+
+### Permutation Tests
+The permutation test is a resampling-type test used to compare the values on an outcome variable between two or more 
+groups. In the case of the permutation test, resampling is done on the group labels. The idea here is that, under the 
+null hypothesis, the outcome distribution should be the same for all groups, whether control or experimental. Thus, 
+we can emulate the null by taking all of the data values as a single large group. Applying labels randomly to the data 
+points (while maintaining the original group membership ratios) gives us one simulated outcome from the null.
+
+The rest is similar to the sampling approach used in a standard hypothesis test, except that we haven't specified a 
+reference distribution to sample from – we're sampling directly from the data we've collected. After applying the 
+labels randomly to all the data and recording the outcome statistic many times, we compare our actual, observed 
+statistic against the simulated statistics. A p-value is obtained by seeing how many simulated statistic values are 
+as or more extreme than the one actually observed, and a conclusion is then drawn.
+
+Try implementing a permutation test in the cells below to test if the 90th percentile of times is statistically 
+significantly smaller for the experimental group, as compared to the control group:
++ Initialize an empty list to store the difference in sample quantiles as `sample_diffs`.
++ Create a loop for each trial:
+   + First generate a permutation sample by randomly shuffling the data point labels. (`random.permutation` will be useful here.)
+   + Then, compute the `q`th quantile of the data points that have been assigned to each group based on the permuted labels. Append the difference in quantiles to the `sample_diffs` list.
++ After gathering the quantile differences for permuted samples, compute the observed difference for the actual data. Then, compute a p-value from the number of permuted sample differences that are less than or greater than the observed difference, depending on the desired alternative hypothesis.
+
+
+### Rank-Sum Test (Mann-Whitney)
+The rank-sum test is fairly different from the two previous approaches. There's no resampling involved; the test is performed only on the data present. The rank-sum test, also known as the Mann-Whitney U test, is not a test of any particular statistic, like the mean or median. Instead, it's a test of distributions: let's say we draw one value at random from the populations behind each group. The null hypothesis says that there's an equal chance that the larger value is from the first group as the second group; the alternative hypothesis says that there's an unequal chance, which can be specified as one- or two-tailed.
+
+In order to test this hypothesis, we should look at the data we've collected and see in how many cases values from one group win compared to values in the second. That is, for each data point in the first group, we count how many values in the second group that are smaller than it. (If both values are equal, we count that as a tie, worth +0.5 to the tally.) This number of wins for the first group gives us a value $U$.
+
+It turns out that $U$ is approximately normally-distributed, given a large enough sample size. If we have $n_1$ data points in the first group and $n_2$ points in the second, then we have a total of $n_1 n_2$ matchups and an equivalent number of victory points to hand out. Under the null hypothesis, we should expect the number of wins to be evenly distributed between groups, and so the expected wins are $\mu_U = \frac{n_1 n_2}{2}$. The variability in the number of wins can be found to be the following equation (assuming no or few ties):
+
+
+    $$ 
+    \sigma_U = \sqrt{\frac{n_1n_2(n_1+n_2+1)}{12}}
+    $$
+
+
+These $\mu_U$ and $\sigma_U$ values can then be used to compute a standard normal z-score, which generates a p-value. Implement this method of performing the rank-sum test in the cells below!
+
+### Sign Test
+For smaller sample sizes, something like the permutation test can be performed. After exhaustively checking the distribution of victories for every possible assignment of group labels to value, a p-value can be computed for how unusual the actually-observed $U$ was.
+
+Also, there already exists a function in the scipy stats package [`mannwhitneyu`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html) that performs the Mann Whitney U test. This function considers more factors than the implementation above, including a correction on the standard deviation for ties and a continuity correction (since we're approximating a discretely-valued distribution with a continuous one). In addition, the approach they take is computationally more efficient, based on the sum of value ranks (hence the rank-sum test name) rather than the matchups explanation provided above.
+
+Reference: [Wikipedia](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test)
+
+
+
+
+
 
 
 
