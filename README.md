@@ -31,7 +31,8 @@ Within the experimental design layout in this project, there are three lessons:
       + [Permutation Tests](#Permutation-Tests)
       + [Rank-Sum Test (Mann-Whitney)](#Rank-Sum-Test)
       + [Sign Test](#Sign-Test)
-      
+  + [Analyze Multiple metric](#Analyze-Multiple-metric)
+  + [Early Stopping](#Early-Stopping)
     
 
 [III. A/B Testing Case Study](#III.-A/B-Testing-Case-Study)
@@ -681,6 +682,55 @@ For smaller sample sizes, something like the permutation test can be performed. 
 Also, there already exists a function in the scipy stats package [`mannwhitneyu`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mannwhitneyu.html) that performs the Mann Whitney U test. This function considers more factors than the implementation above, including a correction on the standard deviation for ties and a continuity correction (since we're approximating a discretely-valued distribution with a continuous one). In addition, the approach they take is computationally more efficient, based on the sum of value ranks (hence the rank-sum test name) rather than the matchups explanation provided above.
 
 Reference: [Wikipedia](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test)
+
+
+## Analyze Multiple Metrics
+If you're tracking multiple evaluation metrics, make sure that you're aware of how the Type I error rates on individual metrics can affect the overall chance of making some kind of Type I error. The simplest case we can consider is if we have _n_ independent evaluation metrics, and that seeing one with a statistically significant result would be enough to call the manipulation a success. In this case, the probability of making at least one Type I error is given by
+    
+    alpha_over = 1 - (1 - alpha_ind)^n
+
+illustrated in the below image for individual `alpha_ind = 0.05` and `alpha_ind = 0.01`
+
+![img4](images/analyze_mul_metric1.png)
+
+To protect against this, we need to introduce a correction factor on the individual test error rate so that the overall error rate is at most the desired level. A conservative approach is to divide the overall error rate by the number of metrics tested:
+
+    alpha_ind = alpha_over/n
+
+This is known as the **Bonferroni correction**. If we assume independence between metrics, we can do a little bit better 
+with the **Šidák correction**:
+
+    alpha_ind = 1 - (1 - alpha_over)^(1/n)
+
+![The Šidák correction is only slightly higher than the line drawn by the Bonferroni correction.](images/analyze_mul_metric2.png)
+
+In real life, evaluation scenarios are rarely so straightforward. Metrics will likely be correlated in some way, rather than being independent. If a positive correlation exists, then knowing the outcome of one metric will make it more likely for a correlated metric to also point in the same way. In this case, the corrections above will be more conservative than necessary, resulting in an overall error rate smaller than the desired level. (In cases of negative correlation, the true error rate could go either way, depending on the types of tests performed.)
+
+In addition, we might need multiple metrics to show statistical significance to call an experiment a success, or there may be different degrees of success depending on which metrics appear to be moved by the manipulation. One metric may not be enough to make it worth deploying a change tested in an experiment. Reducing the individual error rate will make it harder for a truly significant effect to show up as statistically significant. That is, reducing the Type I error rate will also increase the Type II error rate – another conservative shift.
+
+Ultimately, there is a small balancing act when it comes to selecting an error-controlling scheme. Being fully conservative with one of the simple corrections above means that you increase the risk of failing to roll out changes that actually have an impact on metrics. Consider the level of dependence between metrics and what results are needed to declare a success to calibrate the right balance in error rates. If you need to see a significant change in all of your metrics to proceed with it, you might not need a correction factor at all. You can also use dummy test results, bootstrapping, and permutation approaches to plan significance thresholds. Finally, don't forget that practical significance can be an all-important quality that overrides other statistical significance findings.
+
+While the main focus of this page has been on interpretation of evaluation metrics, it's worth noting that these cautions also apply to invariant metrics. The more invariant metrics you test, the more likely it will be that some test will show a statistically significant difference even if the groups tested are drawn from equivalent populations. However, it might not be a good idea to apply a correction factor to individual tests since we want to avoid larger issues with interpretation later on. As mentioned previously, a single invariant metric showing a statistically significant difference is not necessarily cause for alarm, but it is something that merits follow-up in case it does have an effect on our analysis.
+
+
+## Early Stopping
+While an experiment is running, we'll probably be tempted at some point to take a peak at how it's going. 
+And if we see from that peak that the experiment is going well, we might be tempted to just end the experiment early 
+and deploy the tested changes right away. It's important to resist these temptations since:
+
+There are significant risks for peeking ahead and making an early decision if it is not planned for in the design. If you haven't accounted for the effects of peeking on your error rate, then it's best to resist the temptation to look at the results early, and only perform a final analysis at the end of the experiment. This is another reason why it's important to design an experiment ahead of any data collection.
+
+Note that there are ways of putting together a design to allow for making an early decision on an experiment. In the 
+`Early_Stopping.ipynb`, we showed how to treat the problem like a multiple comparisons problem, adjusting the individual 
+test-wise error rate to preserve an overall error rate. For continuous tracking, [this page](https://www.evanmiller.org/sequential-ab-testing.html) 
+describes a rule of thumb for rate-based metrics, tracking the number of successes in each group and stopping the 
+experiment once the counts' sum or difference exceeds some threshold. More generally, tests like the 
+[sequential probability ratio test](https://en.wikipedia.org/wiki/Sequential_probability_ratio_test) can be developed 
+to make an early stopping decision while an experiment is running, if it looks statistically unlikely for a metric to 
+move past or fall back against the statistical significance bound.
+
+
+
 
 
 
